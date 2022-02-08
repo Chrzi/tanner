@@ -3,7 +3,6 @@ import json
 import logging
 import sys
 
-import uvloop
 import yarl
 
 from aiohttp import web
