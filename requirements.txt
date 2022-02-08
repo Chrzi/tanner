@@ -5,7 +5,7 @@ docker<2.6
 mimesis<3.0.0
 yarl
 redis
-aioredis
+aioredis<2.0.0
 pymongo
 pylibinjection
 jinja2
