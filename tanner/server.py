@@ -1,6 +1,9 @@
 import asyncio
 import json
 import logging
+import sys
+
+import uvloop
 import yarl
 
 from aiohttp import web
@@ -126,6 +129,8 @@ class TannerServer:
 
     def start(self):
         loop = asyncio.get_event_loop()
+        print(sys.version)
+        print(hex(id(loop)))
         self.redis_client = loop.run_until_complete(redis_client.RedisClient.get_redis_client())
 
         host = TannerConfig.get("TANNER", "host")

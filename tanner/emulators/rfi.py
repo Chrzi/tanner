@@ -18,6 +18,7 @@ from tanner.utils import patterns
 class RfiEmulator:
     def __init__(self, root_dir, loop=None, allow_insecure=False):
         self._loop = loop if loop is not None else asyncio.get_event_loop()
+        print("self._loop" + hex(id(self._loop)))
         self.script_dir = os.path.join(root_dir, "files")
         self.logger = logging.getLogger("tanner.rfi_emulator.RfiEmulator")
         self.helper = PHPSandboxHelper(self._loop)
@@ -76,6 +77,7 @@ class RfiEmulator:
             return file_name
 
     async def get_rfi_result(self, path):
+        print("Running loop: " + hex(id(asyncio.get_running_loop())))
         rfi_result = None
         await asyncio.sleep(1, loop=self._loop)
         self.logger.info("Downloading the file has started from %s", path)
