@@ -148,10 +148,10 @@ class HPC(object):
             self.s.sendall(data)
         except socket.timeout:
             logger.warn("Timeout while sending - disconnect.")
-            raise Disconnect()
+            raise Disconnect() from None
         except socket.error as e:
             logger.warn("Socket error: %s", e)
-            raise Disconnect()
+            raise Disconnect() from None
 
     def tryconnect(self):
         if not self.connected:
