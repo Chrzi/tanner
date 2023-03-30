@@ -6,8 +6,6 @@ import os
 import re
 import ssl
 import time
-from concurrent.futures import ThreadPoolExecutor
-
 import aiohttp
 import yarl
 
@@ -16,11 +14,10 @@ from tanner.utils import patterns
 
 
 class RfiEmulator:
-    def __init__(self, root_dir, loop=None, allow_insecure=False):
-        self._loop = loop if loop is not None else asyncio.get_event_loop()
+    def __init__(self, root_dir, allow_insecure=False):
         self.script_dir = os.path.join(root_dir, "files")
         self.logger = logging.getLogger("tanner.rfi_emulator.RfiEmulator")
-        self.helper = PHPSandboxHelper(self._loop)
+        self.helper = PHPSandboxHelper()
         self.allow_insecure = allow_insecure
 
     async def download_file(self, path):
@@ -36,14 +33,14 @@ class RfiEmulator:
             os.makedirs(self.script_dir)
 
         if url.scheme == "ftp":
-            pool = ThreadPoolExecutor()
-            ftp_future = self._loop.run_in_executor(pool, self.download_file_ftp, url)
+            loop = asyncio.get_running_loop()
+            ftp_future = loop.run_in_executor(None, self.download_file_ftp, url)
             file_name = await ftp_future
 
         else:
             ssl_context = False if self.allow_insecure else ssl.create_default_context()
             try:
-                async with aiohttp.ClientSession(loop=self._loop) as client:
+                async with aiohttp.ClientSession() as client:
                     async with await client.get(url, ssl=ssl_context) as resp:
                         data = await resp.text()
             except aiohttp.ClientError as client_error:
@@ -77,7 +74,7 @@ class RfiEmulator:
 
     async def get_rfi_result(self, path):
         rfi_result = None
-        await asyncio.sleep(1, loop=self._loop)
+        await asyncio.sleep(1)
         self.logger.info("Downloading the file has started from %s", path)
         file_name = await self.download_file(path)
         if file_name is None:

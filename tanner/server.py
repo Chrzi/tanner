@@ -14,16 +14,14 @@ from tanner.reporting.log_mongodb import Reporting as mongo_report
 from tanner.reporting.log_hpfeeds import Reporting as hpfeeds_report
 from tanner import __version__ as tanner_version
 
+
 class TannerServer:
     def __init__(self):
-        base_dir = TannerConfig.get("EMULATORS", "root_dir")
-        db_name = TannerConfig.get("SQLI", "db_name")
-
-        self.session_manager = session_manager.SessionManager()
+        self.base_handler = None
+        self.dorks = None
+        self.session_manager = None
         self.delete_timeout = TannerConfig.get("SESSIONS", "delete_timeout")
 
-        self.dorks = dorks_manager.DorksManager()
-        self.base_handler = base.BaseHandler(base_dir, db_name)
         self.logger = logging.getLogger(__name__)
         self.redis_client = None
 
@@ -110,6 +108,12 @@ class TannerServer:
         app.router.add_get("/version", self.handle_version)
 
     async def make_app(self):
+        base_dir = TannerConfig.get("EMULATORS", "root_dir")
+        db_name = TannerConfig.get("SQLI", "db_name")
+        self.session_manager = session_manager.SessionManager()
+        self.dorks = dorks_manager.DorksManager()
+        self.base_handler = base.BaseHandler(base_dir, db_name)
+        
         app = web.Application()
         app.on_shutdown.append(self.on_shutdown)
         self.setup_routes(app)

@@ -36,14 +36,14 @@ class BaseHandler:
         }
 
         self.emulators = {
-            "rfi": rfi.RfiEmulator(base_dir, loop=loop, allow_insecure=TannerConfig.get("RFI", "allow_insecure"))
+            "rfi": rfi.RfiEmulator(base_dir, allow_insecure=TannerConfig.get("RFI", "allow_insecure"))
             if self.emulator_enabled["rfi"]
             else None,
             "lfi": lfi.LfiEmulator() if self.emulator_enabled["lfi"] else None,
             "xss": xss.XssEmulator() if self.emulator_enabled["xss"] else None,
             "sqli": sqli.SqliEmulator(db_name, base_dir) if self.emulator_enabled["sqli"] else None,
             "cmd_exec": cmd_exec.CmdExecEmulator() if self.emulator_enabled["cmd_exec"] else None,
-            "php_code_injection": php_code_injection.PHPCodeInjection(loop)
+            "php_code_injection": php_code_injection.PHPCodeInjection()
             if self.emulator_enabled["php_code_injection"]
             else None,
             "php_object_injection": php_object_injection.PHPObjectInjection(loop)

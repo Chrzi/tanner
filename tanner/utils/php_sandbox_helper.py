@@ -5,9 +5,8 @@ from tanner import config
 
 
 class PHPSandboxHelper:
-    def __init__(self, loop):
+    def __init__(self, _=None):
         self.logger = logging.getLogger("tanner.php_sandbox_helper.PHPSandboxHelper")
-        self._loop = loop if loop is not None else asyncio.get_event_loop()
 
     async def get_result(self, code):
         """
@@ -22,7 +21,7 @@ class PHPSandboxHelper:
         )
 
         try:
-            async with aiohttp.ClientSession(loop=self._loop) as session:
+            async with aiohttp.ClientSession() as session:
                 async with session.post(phpox_address, data=code) as resp:
                     result = await resp.json()
         except aiohttp.ClientError as client_error:
