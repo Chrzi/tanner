@@ -54,8 +54,7 @@ class TestServer(AioHTTPTestCase):
         dorks.extract_path = self._make_coroutine()
 
         redis = AsyncMock()
-        redis.close = mock.Mock()
-        redis.wait_closed = AsyncMock()
+        redis.close = AsyncMock()
         self.serv.dorks = dorks
         self.serv.redis_client = redis
 
@@ -67,8 +66,8 @@ class TestServer(AioHTTPTestCase):
 
         return coroutine
 
-    def get_app(self):
-        app = self.serv.create_app(loop=self.loop)
+    async def get_application(self):
+        app = await self.serv.make_app()
         return app
 
     @unittest_run_loop

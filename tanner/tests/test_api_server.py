@@ -16,8 +16,8 @@ class TestAPIServer(AioHTTPTestCase):
 
         super(TestAPIServer, self).setUp()
 
-    def get_app(self):
-        app = self.serv.create_app(loop=self.loop)
+    async def get_application(self):
+        app = await self.serv.make_app()
         return app
 
     @unittest_run_loop

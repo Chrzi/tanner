@@ -38,7 +38,7 @@ class TestDorksManager(unittest.TestCase):
         self.expected_result = None
 
     def test_push_init_dorks(self):
-        self.expected_result = [b"index.php/image?p=rs", b"index.php?qry=param", b"file.php?q=par"]
+        self.expected_result = ["index.php/image?p=rs", "index.php?qry=param", "file.php?q=par"]
 
         async def setup():
             await self.handler.push_init_dorks(self.dorks_pickle, self.handler.dorks_key, self.redis_client)
@@ -59,12 +59,12 @@ class TestDorksManager(unittest.TestCase):
             self.returned_result = await self.redis_client.smembers(self.handler.user_dorks_key)
 
         self.loop.run_until_complete(test())
-        self.expected_result = [b"http://example.com/index.html?page="]
+        self.expected_result = {"http://example.com/index.html?page="}
         self.assertEqual(self.returned_result, self.expected_result)
 
     def test_extract_path_error(self):
         self.path = "/index.html?page=26"
-        self.redis_client.sadd = AsyncMock(side_effect=aioredis.ProtocolError)
+        self.redis_client.sadd = AsyncMock(side_effect=aioredis.ConnectionError)
 
         async def test():
             await self.handler.extract_path(self.path, self.redis_client)
@@ -131,7 +131,6 @@ class TestDorksManager(unittest.TestCase):
             os.remove(self.dorks_pickle)
             os.remove(self.user_dorks_pickle)
             await self.redis_client.flushall()
-            self.redis_client.close()
-            await self.redis_client.wait_closed()
+            await self.redis_client.close()
 
         self.loop.run_until_complete(close())
